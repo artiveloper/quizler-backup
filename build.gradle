@@ -1,0 +1,73 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.0'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id "com.github.node-gradle.node" version "2.2.4"
+}
+
+group = 'kr'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    compile group: 'net.rakugakibox.util', name: 'yaml-resource-bundle', version: '1.1'
+
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.h2database:h2'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+def frontDir = "$projectDir/frontend"
+
+// node 버전 및 npm, node 설치파일 저장 디렉토리 명시
+node {
+    version = '12.13.1' // 설치할 node 버전
+    yarnVersion = '1.13.0' // 설치할 yarn 버전
+    download=true
+    workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir=file("${project.buildDir}/npm")
+}
+
+// npm install 과정
+task appNpmInstall(type: NpmTask) {
+    workingDir = file("${frontDir}")
+    args = ["install"]
+}
+
+// yarn build
+task yarnBuild(type: YarnTask) {
+    workingDir = file("${frontDir}")
+    args = ['build']
+}
+
+// 빌드된 결과 resources로 이동
+task copyWebApp(type: Copy) {
+    from "${frontDir}/build"
+    into 'build/resources/main/static/.'
+}
+
+yarnBuild.dependsOn appNpmInstall
+copyWebApp.dependsOn yarnBuild
+compileJava.dependsOn copyWebApp

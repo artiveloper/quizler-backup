@@ -1,0 +1,5 @@
+# 공통 에러 코드
+email:
+  notBlank: "이메일을 다시 확인해주세요"
+password:
+  notBlank: "비밀번호를 다시 확인해주세요"

@@ -1,0 +1,19 @@
+# 공통 에러 코드
+InvalidInputValue:
+  code: "CE01"
+  message: "입력값을 잘못 입력하였습니다"
+  status: "400"
+MethodNotAllowed:
+  code: "CE02"
+  message: "지원하지 않는 요청 형식입니다"
+  status: "405"
+SystemError:
+  code: "CE99"
+  message: "시스템 에러입니다"
+  status: "500"
+
+# 사용자 관련 에러코드
+signInFail:
+  code: "AE01"
+  message: "이메일과 비밀번호를 확인해주세요"
+  status: "401"
